@@ -14,20 +14,21 @@ export circuit submitUnderwritingProof(
   liquidAssets: Uint<32>,
   monthlyDebtService: Uint<32>
 ): [] {
-  // Compute average (mu)
+  // Compute sum
   const sum: Uint<32> = inflow0 + inflow1 + inflow2 + inflow3 + inflow4 + inflow5;
-  const mu: Uint<32> = sum / 6;
 
   // Hackathon Proxy for sigma/mu < 0.3:
   // If min(inflows) >= 0.7 * mu, the volatility is reasonably low.
-  const minThreshold: Uint<32> = (mu * 70) / 100;
+  // We want to check: inflow >= (sum / 6) * 0.7
+  // Which is equivalent to: inflow * 60 >= sum * 7
+  const thresholdSum: Uint<32> = sum * 7;
   const isStable: Boolean = 
-    inflow0 >= minThreshold &&
-    inflow1 >= minThreshold &&
-    inflow2 >= minThreshold &&
-    inflow3 >= minThreshold &&
-    inflow4 >= minThreshold &&
-    inflow5 >= minThreshold;
+    (inflow0 * 60) >= thresholdSum &&
+    (inflow1 * 60) >= thresholdSum &&
+    (inflow2 * 60) >= thresholdSum &&
+    (inflow3 * 60) >= thresholdSum &&
+    (inflow4 * 60) >= thresholdSum &&
+    (inflow5 * 60) >= thresholdSum;
 
   // Liquidity Buffer checks
   // Tier A: >= 3x debt service
