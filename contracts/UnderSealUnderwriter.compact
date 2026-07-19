@@ -5,24 +5,29 @@ export ledger eligible: Map<Bytes<32>, Boolean>;
 
 export circuit submitUnderwritingProof(
   borrower: Bytes<32>,
-  inflows: [Uint<32>, 6],
+  inflow0: Uint<32>,
+  inflow1: Uint<32>,
+  inflow2: Uint<32>,
+  inflow3: Uint<32>,
+  inflow4: Uint<32>,
+  inflow5: Uint<32>,
   liquidAssets: Uint<32>,
   monthlyDebtService: Uint<32>
 ): [] {
   // Compute average (mu)
-  const sum: Uint<32> = inflows[0] + inflows[1] + inflows[2] + inflows[3] + inflows[4] + inflows[5];
+  const sum: Uint<32> = inflow0 + inflow1 + inflow2 + inflow3 + inflow4 + inflow5;
   const mu: Uint<32> = sum / 6;
 
   // Hackathon Proxy for sigma/mu < 0.3:
   // If min(inflows) >= 0.7 * mu, the volatility is reasonably low.
   const minThreshold: Uint<32> = (mu * 70) / 100;
   const isStable: Boolean = 
-    inflows[0] >= minThreshold &&
-    inflows[1] >= minThreshold &&
-    inflows[2] >= minThreshold &&
-    inflows[3] >= minThreshold &&
-    inflows[4] >= minThreshold &&
-    inflows[5] >= minThreshold;
+    inflow0 >= minThreshold &&
+    inflow1 >= minThreshold &&
+    inflow2 >= minThreshold &&
+    inflow3 >= minThreshold &&
+    inflow4 >= minThreshold &&
+    inflow5 >= minThreshold;
 
   // Liquidity Buffer checks
   // Tier A: >= 3x debt service
@@ -31,7 +36,7 @@ export circuit submitUnderwritingProof(
   const bufferRatioB: Boolean = liquidAssets >= (2 * monthlyDebtService);
 
   // No distress: trailing 3 periods > 0
-  const noDistress: Boolean = inflows[3] > 0 && inflows[4] > 0 && inflows[5] > 0;
+  const noDistress: Boolean = inflow3 > 0 && inflow4 > 0 && inflow5 > 0;
 
   // Evaluate Tier
   let finalTier: Uint<8> = 2; // C
