@@ -1,0 +1,6 @@
+pragma language_version >= 0.14.0;
+
+// This contract demonstrates a lender using the public eligible state
+export circuit approveLoan(isEligible: Boolean): [] {
+  assert isEligible == true;
+}
